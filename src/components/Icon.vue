@@ -1,12 +1,12 @@
 <script>
 function assign (obj, ...sources) {
-  sources.forEach(source => {
-    for (let key in source) {
+  sources.forEach(function (source) {
+    for (var key in source) {
       if (source.hasOwnProperty(key)) {
-        obj[key] = source[key]
+        obj[key] = source[key];
       }
     }
-  })
+  });
 
   return obj
 }
@@ -44,14 +44,18 @@ export default {
       'svg',
       options,
       this.raw && this.icon ? null : (this.$slots.default || [
-        ...this.icon.paths.map((path, i) => h('path', {
-          attrs: path,
-          key: `path-${i}`
-        })),
-        ...this.icon.polygons.map((polygon, i) => h('polygon', {
-          attrs: polygon,
-          key: `polygon-${i}`
-        }))
+        ...this.icon.paths.map(function (path, i) {
+        return h('path', {
+            attrs: path,
+            key: 'path-' + i
+        });
+        }),
+        ...this.icon.polygons.map(function (polygon, i) {
+        return h('polygon', {
+            attrs: polygon,
+            key: 'polygon-' + i
+        });
+        })
       ]))
   },
   props: {
@@ -147,19 +151,19 @@ export default {
       }
       let raw = this.icon.raw
       let ids = {}
-      raw = raw.replace(/\s(?:xml:)?id=(["']?)([^"')\s]+)\1/g, (match, quote, id) => {
-        let uniqueId = getId()
-        ids[id] = uniqueId
-        return ` id="${uniqueId}"`
-      })
-      raw = raw.replace(/#(?:([^'")\s]+)|xpointer\(id\((['"]?)([^')]+)\2\)\))/g, (match, rawId, _, pointerId) => {
-        let id = rawId || pointerId
-        if (!id || !ids[id]) {
-          return match
-        }
+        raw = raw.replace(/\s(?:xml:)?id=(["']?)([^"')\s]+)\1/g, function (match, quote, id) {
+        var uniqueId = getId();
+        ids[id] = uniqueId;
+        return " id=\"" + uniqueId + "\"";
+        });
+raw = raw.replace(/#(?:([^'")\s]+)|xpointer\(id\((['"]?)([^')]+)\2\)\))/g, function (match, rawId, _, pointerId) {
+  var id = rawId || pointerId;
+  if (!id || !ids[id]) {
+    return match;
+  }
 
-        return `#${ids[id]}`
-      })
+  return "#" + ids[id];
+});
 
       return raw
     }
@@ -176,41 +180,42 @@ export default {
 
     let width = 0
     let height = 0
-    this.$children.forEach(child => {
-      child.outerScale = this.normalizedScale
+    this.$children.forEach(function (child) {
+    child.outerScale = undefined.normalizedScale;
 
-      width = Math.max(width, child.width)
-      height = Math.max(height, child.height)
-    })
+    width = Math.max(width, child.width);
+    height = Math.max(height, child.height);
+    });
     this.childrenWidth = width
     this.childrenHeight = height
-    this.$children.forEach(child => {
-      child.x = (width - child.width) / 2
-      child.y = (height - child.height) / 2
+    this.$children.forEach(function (child) {
+        child.x = (width - child.width) / 2;
+        child.y = (height - child.height) / 2;
     })
   },
   register (data) {
-    for (let name in data) {
-      let icon = data[name]
-      let {
-        paths = [],
-        d,
-        polygons = [],
-        points
-      } = icon
+    for (var name in data) {
+    var icon = data[name];
+    var _icon$paths = icon.paths,
+        paths = _icon$paths === undefined ? [] : _icon$paths,
+        d = icon.d,
+        _icon$polygons = icon.polygons,
+        polygons = _icon$polygons === undefined ? [] : _icon$polygons,
+        points = icon.points;
 
-      if (d) {
-        paths.push({ d })
-      }
 
-      if (points) {
-        polygons.push({ points })
-      }
+    if (d) {
+        paths.push({ d: d });
+    }
 
-      icons[name] = assign({}, icon, {
-        paths,
-        polygons
-      })
+    if (points) {
+        polygons.push({ points: points });
+    }
+
+    icons[name] = assign({}, icon, {
+        paths: paths,
+        polygons: polygons
+    });
     }
   },
   icons
